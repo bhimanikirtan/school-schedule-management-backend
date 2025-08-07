@@ -56,35 +56,58 @@ const schoolLogin = async (req, res) => {
     res.status(500).json({ status: 500, msg: "Login Failed" });
   }
 };
-// const sendEmaillink = async (req, res) => {
-//   try {
-//     const { email } = req.body;
-//     const token = crypto.randomBytes(32).toString("hex");
-//     console.log(token);
-//     req.user.resetToken = token;
-//     await req.user.save();
-//     const transporter = nodemailer.createTransport({
-//       host: "smtp.gmail.com",
-//       auth: {
-//         user: process.env.EMAIL_USER,
-//         pass: process.env.EMAIL_PASS,
-//       },
-//     });
-//     const resetLink = `${process.env.REACTBASE_URL}/teacherRegister?token=${token}`;
-//     await transporter.sendMail({
-//       to: email,
-//       subject: "Register For Teacher",
-//       html: ` For TeacherRegister:<a href="${resetLink}"><h1>Click here</h1></a>`,
-//     });
-//     res.json({ msg: "Teacher Register Link send" });
-//   } catch (error) {
-//     return res
-//       .status(500)
-//       .json({ status: false, msg: "send register link error" });
-//   }
-// };
+
+const sendEmaillink = async (req, res) => {
+  try {
+    console.log("Sending teacher register link...");
+
+    const id = req.user.id;
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ msg: "Email is required" });
+    }
+
+    const token = crypto.randomBytes(32).toString("hex");
+    const findSchool = await User.findById(id);
+
+    if (!findSchool) {
+      return res.status(404).json({ msg: "School not found" });
+    }
+
+    // Save token to school user (optional, but as per your code)
+    findSchool.resetToken = token;
+    await findSchool.save();
+
+    // Setup email transporter
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false, // upgrade later with STARTTLS
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const resetLink = `http://localhost:5173/teacherRegister?token=${token}`;
+
+    // Send email
+    await transporter.sendMail({
+      to: email,
+      subject: "Register as Teacher",
+      html: `<p>You have been invited to register as a teacher. Click the link below to register:</p><a href="${resetLink}"><strong>Register Here</strong></a>`,
+    });
+
+    res.json({ msg: "Teacher registration link sent successfully." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: "Error sending teacher register link." });
+  }
+};
 
 module.exports = {
   schoolRegister,
   schoolLogin,
+  sendEmaillink,
 };
