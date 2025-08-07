@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  phone: Number,
   password: String,
   role: {
     type: String,
@@ -18,6 +19,14 @@ const userSchema = new mongoose.Schema({
     ref: "User",
   },
   resetToken: String,
+  addressData: {
+    address: String,
+    city: String,
+    state: String,
+    pincode: String,
+    country: String,
+  },
+  image: String,
 });
 
 module.exports = mongoose.model("User", userSchema);
