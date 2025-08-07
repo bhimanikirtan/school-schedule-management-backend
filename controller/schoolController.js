@@ -70,8 +70,20 @@ const sendEmaillink = async (req, res) => {
     res.status(500).json({ msg: "Error sending teacher register link." });
   }
 };
+const getAllteachers = async (req, res) => {
+  try {
+    const schoolId = req.user.id;
+    const allTeachers = await User.find({ connectedSchool: schoolId });
+    res
+      .status(200)
+      .json({ status: true, msg: "fetch Teachers successfully", allTeachers });
+  } catch (error) {
+    res.status(500).json({ status: false, msg: "failed to fetch data" });
+  }
+};
 
 module.exports = {
   schoolRegister,
   sendEmaillink,
+  getAllteachers,
 };
