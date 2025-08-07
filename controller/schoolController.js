@@ -21,42 +21,11 @@ const schoolRegister = async (req, res) => {
     });
     return res
       .status(200)
-      .json({ status: true, msg: "Register Successfully", newUser });
+      .json({ status: true, msg: "School Register Successfully", newUser });
   } catch (error) {
     res.status(500).json({ status: false, msg: "error to register" });
   }
 };
-const schoolLogin = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const userDetails = await User.findOne({ email });
-
-    if (!userDetails) {
-      return res.status(400).json({ status: 400, msg: "User does not exist" });
-    }
-
-    const isMatch = await bcrypt.compare(password, userDetails.password);
-    if (!isMatch) {
-      return res.status(400).json({ status: 400, msg: "Invalid credentials" });
-    }
-
-    const user = {
-      id: userDetails.id,
-      name: userDetails.name,
-      email: userDetails.email,
-      role: userDetails.role,
-    };
-    const token = generateJWTToken(user);
-
-    return res
-      .status(200)
-      .json({ status: 200, msg: "User login successfully", user, token });
-  } catch (error) {
-    console.error("Login Error:", error);
-    res.status(500).json({ status: 500, msg: "Login Failed" });
-  }
-};
-
 const sendEmaillink = async (req, res) => {
   try {
     console.log("Sending teacher register link...");
@@ -74,16 +43,13 @@ const sendEmaillink = async (req, res) => {
     if (!findSchool) {
       return res.status(404).json({ msg: "School not found" });
     }
-
-    // Save token to school user (optional, but as per your code)
     findSchool.resetToken = token;
     await findSchool.save();
 
-    // Setup email transporter
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
       port: 587,
-      secure: false, // upgrade later with STARTTLS
+      secure: false,
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
@@ -92,7 +58,6 @@ const sendEmaillink = async (req, res) => {
 
     const resetLink = `http://localhost:5173/teacherRegister?token=${token}`;
 
-    // Send email
     await transporter.sendMail({
       to: email,
       subject: "Register as Teacher",
@@ -108,6 +73,5 @@ const sendEmaillink = async (req, res) => {
 
 module.exports = {
   schoolRegister,
-  schoolLogin,
   sendEmaillink,
 };
