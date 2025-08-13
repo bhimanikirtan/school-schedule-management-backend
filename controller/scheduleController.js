@@ -42,6 +42,21 @@ const getAllSchedules = async (req, res) => {
       .json({ status: false, msg: "failed to fetch schedule" });
   }
 };
+const getAllteacherSchedules = async (req, res) => {
+  try {
+    const id = req.user.id;
+    const allteacherSchedule = await Schedule.find({ teacherId: id }).populate(
+      "teacherId schoolId"
+    );
+    return res
+      .status(200)
+      .json({ status: true, msg: "fetch All schedules", allteacherSchedule });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ status: false, msg: "failed to fetch schedule" });
+  }
+};
 const updateSchedule = async (req, res) => {
   try {
     const scheduleId = req.params.id;
@@ -91,4 +106,5 @@ module.exports = {
   getAllSchedules,
   updateSchedule,
   deleteSchedule,
+  getAllteacherSchedules,
 };
