@@ -35,10 +35,10 @@ const Login = async (req, res) => {
 const fetchUser = async (req, res) => {
   try {
     const id = req.user.id;
-    console.log(id);
+    // console.log(id);
 
     const fetchUser = await User.findById(id);
-    console.log(fetchUser);
+    // console.log(fetchUser);
 
     return res
       .status(200)
