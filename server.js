@@ -5,6 +5,7 @@ const connectDB = require("./config/db");
 const loginRoute = require("./routes/loginRoute");
 const schoolRoute = require("./routes/schoolRoute");
 const teacherRoute = require("./routes/teacherRoute");
+const subjectRoute = require("./routes/subjectRoute");
 const scheduleRoute = require("./routes/scheduleRoute");
 dotenv.config();
 connectDB();
@@ -15,6 +16,7 @@ app.use(cors());
 app.use("/api/login", loginRoute);
 app.use("/api/school", schoolRoute);
 app.use("/api/teacher", teacherRoute);
+app.use("/api/subject", subjectRoute);
 app.use("/api/schedule", scheduleRoute);
 app.listen(process.env.PORT, "0.0.0.0", () => {
   console.log(`Server is running on port ${process.env.PORT}`);
