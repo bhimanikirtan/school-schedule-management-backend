@@ -15,3 +15,4 @@ router.get("/getAllteacherschedules", verifyToken, getAllteacherSchedules);
 router.put("/updateSchedule/:id", updateSchedule);
 router.delete("/deleteSchedule/:id", deleteSchedule);
 module.exports = router;
+``;
