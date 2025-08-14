@@ -36,8 +36,13 @@ const setSchedule = async (req, res) => {
 
 const getAllSchedules = async (req, res) => {
   try {
-    const id = req.user.id;
-    const allSchedules = await Schedule.find({ schoolId: id }).populate(
+    const schoolId = req.user.id;
+    const { teacherId } = req.query;
+    let scheduleQuery = { schoolId: schoolId };
+    if (teacherId) {
+      scheduleQuery.teacherId = teacherId;
+    }
+    const allSchedules = await Schedule.find(scheduleQuery).populate(
       "teacherId schoolId"
     );
 
