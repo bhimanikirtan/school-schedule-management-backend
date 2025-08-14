@@ -5,8 +5,9 @@ const setSchedule = async (req, res) => {
   try {
     console.log(req.body);
     const id = req.user.id;
-    const { teacherId, title, start, end } = req.body;
-    if (!teacherId || !title || !start || !end) {
+    const { teacherId, title, start, end, className, subject } = req.body;
+
+    if (!teacherId || !title || !start || !end || !className || !subject) {
       return res
         .status(400)
         .json({ status: false, msg: "All fields are required" });
@@ -15,89 +16,99 @@ const setSchedule = async (req, res) => {
     const schedule = new Schedule({
       teacherId,
       schoolId: id,
+      className,
+      subject,
       title,
       start,
       end,
     });
+
     await schedule.save();
+
     return res
       .status(200)
-      .json({ status: true, msg: "Schedule Added successFully" });
+      .json({ status: true, msg: "Schedule Added Successfully" });
   } catch (error) {
-    return res.status(500).json({ status: false, msg: "Add Schedule error" });
+    console.error(error);
+    return res.status(500).json({ status: false, msg: "Add Schedule Error" });
   }
 };
+
 const getAllSchedules = async (req, res) => {
   try {
     const id = req.user.id;
     const allSchedules = await Schedule.find({ schoolId: id }).populate(
       "teacherId schoolId"
     );
+
     return res
       .status(200)
-      .json({ status: true, msg: "fetch All schedules", allSchedules });
+      .json({ status: true, msg: "Fetch All Schedules", allSchedules });
   } catch (error) {
+    console.error(error);
     return res
       .status(500)
-      .json({ status: false, msg: "failed to fetch schedule" });
+      .json({ status: false, msg: "Failed to Fetch Schedule" });
   }
 };
+
 const getAllteacherSchedules = async (req, res) => {
   try {
     const id = req.user.id;
     const allteacherSchedule = await Schedule.find({ teacherId: id }).populate(
       "teacherId schoolId"
     );
-    return res
-      .status(200)
-      .json({ status: true, msg: "fetch All schedules", allteacherSchedule });
+
+    return res.status(200).json({
+      status: true,
+      msg: "Fetch All Teacher Schedules",
+      allteacherSchedule,
+    });
   } catch (error) {
+    console.error(error);
     return res
       .status(500)
-      .json({ status: false, msg: "failed to fetch schedule" });
+      .json({ status: false, msg: "Failed to Fetch Schedule" });
   }
 };
+
 const updateSchedule = async (req, res) => {
   try {
     const scheduleId = req.params.id;
-    console.log(scheduleId);
+    const { start, end, teacherId, title, className, subject } = req.body;
 
-    const { start, end, teacherId, title } = req.body;
-    console.log(req.body);
-
-    await Schedule.findByIdAndUpdate(
+    const updatedSchedule = await Schedule.findByIdAndUpdate(
       scheduleId,
-      {
-        start,
-        end,
-        teacherId,
-        title,
-      },
+      { start, end, teacherId, title, className, subject },
       { new: true }
     );
 
     return res.status(200).json({
       status: true,
-      msg: "Schedule Update SuccessFully",
-      updateSchedule,
+      msg: "Schedule Updated Successfully",
+      updatedSchedule,
     });
   } catch (error) {
+    console.error(error);
     return res
       .status(500)
-      .json({ status: false, msg: "error to update Schedule" });
+      .json({ status: false, msg: "Error to Update Schedule" });
   }
 };
+
 const deleteSchedule = async (req, res) => {
   try {
     const deleteId = req.params.id;
-    const deleteschedule = await Schedule.findByIdAndDelete(deleteId);
+    await Schedule.findByIdAndDelete(deleteId);
+
     return res
       .status(200)
       .json({ status: true, msg: "Schedule Deleted Successfully" });
   } catch (error) {
+    console.error(error);
     return res
       .status(500)
-      .json({ status: false, msg: "error to delete schedule" });
+      .json({ status: false, msg: "Error to Delete Schedule" });
   }
 };
 

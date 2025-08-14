@@ -11,9 +11,26 @@ const scheduleSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
-  title: { type: String, required: true },
-  start: { type: Date, required: true },
-  end: { type: Date, required: true },
+  className: {
+    type: String,
+    required: true,
+  },
+  subject: {
+    type: String,
+    required: true,
+  },
+  title: {
+    type: String,
+    required: true,
+  },
+  start: {
+    type: Date,
+    required: true,
+  },
+  end: {
+    type: Date,
+    required: true,
+  },
 });
 
 module.exports = mongoose.model("Schedule", scheduleSchema);
