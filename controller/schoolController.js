@@ -56,7 +56,7 @@ const sendEmaillink = async (req, res) => {
       },
     });
 
-    const resetLink = `http://localhost:5173/teacherRegister?token=${token}`;
+    const resetLink = `${process.env.REACTBASE_URL}/teacherRegister?token=${token}`;
 
     await transporter.sendMail({
       to: email,

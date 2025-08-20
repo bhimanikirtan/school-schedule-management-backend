@@ -5,7 +5,9 @@ const setSchedule = async (req, res) => {
   try {
     console.log(req.body);
     const id = req.user.id;
-    const { teacherId, title, start, end, className, subject } = req.body;
+
+    const { teacherId, title, start, end, className, subject, rrule } =
+      req.body;
 
     if (!teacherId || !title || !start || !end || !className || !subject) {
       return res
@@ -13,7 +15,7 @@ const setSchedule = async (req, res) => {
         .json({ status: false, msg: "All fields are required" });
     }
 
-    const schedule = new Schedule({
+    const scheduleData = {
       teacherId,
       schoolId: id,
       className,
@@ -21,8 +23,16 @@ const setSchedule = async (req, res) => {
       title,
       start,
       end,
-    });
+    };
 
+    if (rrule) {
+      scheduleData.rrule = rrule;
+      scheduleData.isRecurring = true;
+    } else {
+      scheduleData.isRecurring = false;
+    }
+
+    const schedule = new Schedule(scheduleData);
     await schedule.save();
 
     return res
@@ -80,11 +90,30 @@ const getAllteacherSchedules = async (req, res) => {
 const updateSchedule = async (req, res) => {
   try {
     const scheduleId = req.params.id;
-    const { start, end, teacherId, title, className, subject } = req.body;
+    console.log(req.body, "reqbodyyyyyyyyyyyyyy");
+
+    const { start, end, teacherId, title, className, subject, rrule } = req.body;
+
+    const updateData = {
+      start,
+      end,
+      teacherId,
+      title,
+      className,
+      subject,
+    };
+
+    if (rrule) {
+      updateData.rrule = rrule;
+      updateData.isRecurring = true;
+    } else {
+      updateData.rrule = null;      
+      updateData.isRecurring = false;
+    }
 
     const updatedSchedule = await Schedule.findByIdAndUpdate(
       scheduleId,
-      { start, end, teacherId, title, className, subject },
+      updateData,
       { new: true }
     );
 
@@ -100,6 +129,7 @@ const updateSchedule = async (req, res) => {
       .json({ status: false, msg: "Error to Update Schedule" });
   }
 };
+
 
 const deleteSchedule = async (req, res) => {
   try {
