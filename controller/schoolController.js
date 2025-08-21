@@ -9,7 +9,7 @@ const schoolRegister = async (req, res) => {
     const { name, email, password } = req.body;
     const findSchool = await User.findOne({ email });
     if (findSchool) {
-      res.status(500).json({ status: false, msg: "School already Register" });
+      res.status(409).json({ status: false, msg: "School already Register" });
     }
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -28,20 +28,18 @@ const schoolRegister = async (req, res) => {
 };
 const sendEmaillink = async (req, res) => {
   try {
-    console.log("Sending teacher register link...");
-
     const id = req.user.id;
     const { email } = req.body;
 
     if (!email) {
-      return res.status(400).json({ msg: "Email is required" });
+      return res.status(404).json({ status: false, msg: "Email is required" });
     }
 
     const token = crypto.randomBytes(32).toString("hex");
     const findSchool = await User.findById(id);
 
     if (!findSchool) {
-      return res.status(404).json({ msg: "School not found" });
+      return res.status(404).json({ status: false, msg: "School not found" });
     }
     findSchool.resetToken = token;
     await findSchool.save();
@@ -63,11 +61,14 @@ const sendEmaillink = async (req, res) => {
       subject: "Register as Teacher",
       html: `<p>You have been invited to register as a teacher. Click the link below to register:</p><a href="${resetLink}"><strong>Register Here</strong></a>`,
     });
-
-    res.json({ msg: "Teacher registration link sent successfully." });
+    return res.status(200).json({
+      status: true,
+      msg: "Teacher registration link sent successfully.",
+    });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ msg: "Error sending teacher register link." });
+    res
+      .status(500)
+      .json({ status: false, msg: "Error sending teacher register link." });
   }
 };
 const getAllteachers = async (req, res) => {

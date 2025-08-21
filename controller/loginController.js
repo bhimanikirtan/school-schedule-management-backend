@@ -8,12 +8,16 @@ const Login = async (req, res) => {
     const userDetails = await User.findOne({ email });
 
     if (!userDetails) {
-      return res.status(400).json({ status: 400, msg: "User does not exist" });
+      return res
+        .status(404)
+        .json({ status: false, msg: "User does not exist" });
     }
 
     const isMatch = await bcrypt.compare(password, userDetails.password);
     if (!isMatch) {
-      return res.status(400).json({ status: 400, msg: "Invalid credentials" });
+      return res
+        .status(400)
+        .json({ status: false, msg: "Invalid credentials" });
     }
 
     const user = {
@@ -26,20 +30,15 @@ const Login = async (req, res) => {
 
     return res
       .status(200)
-      .json({ status: 200, msg: "User login successfully", user, token });
+      .json({ status: true, msg: "User login successfully", user, token });
   } catch (error) {
-    console.error("Login Error:", error);
-    res.status(500).json({ status: 500, msg: "Login Failed" });
+    res.status(500).json({ status: false, msg: "Login Failed" });
   }
 };
 const fetchUser = async (req, res) => {
   try {
     const id = req.user.id;
-    // console.log(id);
-
     const fetchUser = await User.findById(id);
-    // console.log(fetchUser);
-
     return res
       .status(200)
       .json({ status: true, msg: "fetch user successfully", fetchUser });
@@ -50,8 +49,6 @@ const fetchUser = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     const id = req.user.id;
-    console.log(req.body);
-
     const updateData = {
       name: req.body.name,
       phone: req.body.phone,
@@ -74,17 +71,16 @@ const updateProfile = async (req, res) => {
     });
 
     if (!updateUser) {
-      return res.status(400).json({ status: 400, msg: "User not found" });
+      return res.status(404).json({ status: false, msg: "User not found" });
     }
 
     return res.status(200).json({
-      status: 200,
+      status: true,
       msg: "UserProfile updated successfully",
       updateUser,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ status: 500, msg: "ProfileUpdate Failed" });
+    res.status(500).json({ status: false, msg: "ProfileUpdate Failed" });
   }
 };
 module.exports = {

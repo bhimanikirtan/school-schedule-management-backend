@@ -7,8 +7,8 @@ const addSubject = async (req, res) => {
 
     if (!subject || !category) {
       return res
-        .status(400)
-        .json({ msg: "Subject and category name is required" });
+        .status(409)
+        .json({ status: false, msg: "Subject and category name is required" });
     }
 
     const newSubject = new Subject({
@@ -18,11 +18,11 @@ const addSubject = async (req, res) => {
     });
 
     await newSubject.save();
-
-    res.json({ msg: "Subject added successfully", newSubject });
+    return res
+      .status(200)
+      .json({ status: true, msg: "Subject added successfully", newSubject });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ msg: "Server error" });
+    res.status(500).json({ status: false, msg: "Server error" });
   }
 };
 const getAllSubjects = async (req, res) => {
@@ -59,7 +59,6 @@ const updateSubject = async (req, res) => {
       data: updatedSubject,
     });
   } catch (error) {
-    console.error(error);
     return res.status(500).json({
       status: false,
       msg: "Error updating subject",
@@ -76,7 +75,6 @@ const deleteSubject = async (req, res) => {
       deleteSubject,
     });
   } catch (error) {
-    console.error(error);
     return res.status(500).json({
       status: false,
       msg: "Error deleteing subject",
