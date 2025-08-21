@@ -3,15 +3,12 @@ const Schedule = require("../model/schedule");
 
 const setSchedule = async (req, res) => {
   try {
-    console.log(req.body);
     const id = req.user.id;
-
     const { teacherId, title, start, end, className, subject, rrule } =
       req.body;
-
     if (!teacherId || !title || !start || !end || !className || !subject) {
       return res
-        .status(400)
+        .status(404)
         .json({ status: false, msg: "All fields are required" });
     }
 
@@ -39,7 +36,6 @@ const setSchedule = async (req, res) => {
       .status(200)
       .json({ status: true, msg: "Schedule Added Successfully" });
   } catch (error) {
-    console.error(error);
     return res.status(500).json({ status: false, msg: "Add Schedule Error" });
   }
 };
@@ -60,7 +56,6 @@ const getAllSchedules = async (req, res) => {
       .status(200)
       .json({ status: true, msg: "Fetch All Schedules", allSchedules });
   } catch (error) {
-    console.error(error);
     return res
       .status(500)
       .json({ status: false, msg: "Failed to Fetch Schedule" });
@@ -80,7 +75,6 @@ const getAllteacherSchedules = async (req, res) => {
       allteacherSchedule,
     });
   } catch (error) {
-    console.error(error);
     return res
       .status(500)
       .json({ status: false, msg: "Failed to Fetch Schedule" });
@@ -90,9 +84,8 @@ const getAllteacherSchedules = async (req, res) => {
 const updateSchedule = async (req, res) => {
   try {
     const scheduleId = req.params.id;
-    console.log(req.body, "reqbodyyyyyyyyyyyyyy");
-
-    const { start, end, teacherId, title, className, subject, rrule } = req.body;
+    const { start, end, teacherId, title, className, subject, rrule } =
+      req.body;
 
     const updateData = {
       start,
@@ -107,7 +100,7 @@ const updateSchedule = async (req, res) => {
       updateData.rrule = rrule;
       updateData.isRecurring = true;
     } else {
-      updateData.rrule = null;      
+      updateData.rrule = null;
       updateData.isRecurring = false;
     }
 
@@ -123,13 +116,11 @@ const updateSchedule = async (req, res) => {
       updatedSchedule,
     });
   } catch (error) {
-    console.error(error);
     return res
       .status(500)
       .json({ status: false, msg: "Error to Update Schedule" });
   }
 };
-
 
 const deleteSchedule = async (req, res) => {
   try {
@@ -140,7 +131,6 @@ const deleteSchedule = async (req, res) => {
       .status(200)
       .json({ status: true, msg: "Schedule Deleted Successfully" });
   } catch (error) {
-    console.error(error);
     return res
       .status(500)
       .json({ status: false, msg: "Error to Delete Schedule" });
